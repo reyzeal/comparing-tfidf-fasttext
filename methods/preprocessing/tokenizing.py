@@ -1,5 +1,5 @@
 """
-    Tahap II
+    Tahap III
 
     Tokenisasi adalah mengubah bentuk string input menjadi array setiap kata.
 

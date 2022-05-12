@@ -1,8 +1,7 @@
 """
-    Tahap III
+    Tahap I
 
-    Case Folding digunakan unutk mengubah text huruf besar ke huruf kecil.
-
+    Cleansing adalah tahapan menghilangkan whitespace yang tidak diinginkan
 """
 import re
 
