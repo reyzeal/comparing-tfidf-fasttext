@@ -15,11 +15,23 @@ Preprocessing
 
 :return str, dict
 '''
+
+
 def preprocessing(text):
     result = {'cleansing': cleansing(text), 'casefolding': '', 'tokenisasi': '', 'stopword': '', 'stemming': ''}
+
     result['casefolding'] = casefolding(result['cleansing'])
     result['tokenisasi'] = tokenisasi(result['casefolding'])
     result['stopword'] = stopword(result['tokenisasi'])
     result['stemming'] = stemming(result['stopword'])
 
     return result['stemming'], result
+
+
+if __name__ == "__main__":
+    test = '''SISTEM PENDUKUNG KEPUTUSAN PENILAIAN KARYAWAN BERPRESTASI
+BERDASARKAN KINERJA BERBASIS WEB DENGAN METODE ANALYTICAL
+HIERARCHY PROSES ( AHP )
+( Studi kasus pada PT Anindya Mitra Internasional Yogyakarta )'''
+
+    print(preprocessing(test))

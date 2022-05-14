@@ -1,2 +1,10 @@
 venv
 .idea
+_fasttext/*.bz2
+_fasttext/wiki-id-formatted.txt
+_fasttext/cc.id.300.bin
+_fasttext/trained_model_id.bin
+_fasttext/cc.id.300.bin.gz
+__pycache__
+*.bin
+dataset.txt
