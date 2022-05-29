@@ -110,31 +110,24 @@ def eprint_retrieve():
         pickle.dump(x, f)
 
     print("training")
-    _fasttext.training("model.100.bin", "dataset.txt", dim=100, ws=5)
-    _fasttext.training("model.300.bin", "dataset.txt", dim=300, ws=5)
-    _fasttext.training("model.500.bin", "dataset.txt", dim=500, ws=5)
-    _fasttext.build_docs_set(dataset, "docset")
-    with open("docset.json", 'w') as f:
-        json.dump(dataset, f)
+    for dim in [100, 300, 500]:
+        for ws in [3, 4, 5]:
+            _fasttext.training("model.%dw%d.bin" % (dim, ws), "dataset.txt", dim=dim, ws=ws)
 
 
 def testing2():
     tfidf_model = tfidf.load_saved("tfidf.bin")
     query = "media sosial tfidf"
     x = tfidf.similarity(query, tfidf_model)
-    y = _fasttext.similarity(query, "model.100.bin", "docset")
-    z = _fasttext.similarity(query, "model.300.bin", "docset")
-    a = _fasttext.similarity(query, "model.500.bin", "docset")
-    result_y = [(retrieve(i[0])['data']['title'], i[1]) for i in y[:10]]
-    result_x = [(retrieve(i[0])['data']['title'], i[1]) for i in x[:10]]
-    result_z = [(retrieve(i[0])['data']['title'], i[1]) for i in z[:10]]
-    result_a = [(retrieve(i[0])['data']['title'], i[1]) for i in a[:10]]
-    for i in range(10):
-        pprint(result_x[i])
-        pprint(result_y[i])
-        pprint(result_z[i])
-        pprint(result_a[i])
-        print("===================")
+    result = [[(retrieve(i[0])['preprocessed']['verbose']['casefolding'], i[1]) for i in x[:10]]]
+    for dim in [100, 300, 500]:
+        for ws in [3, 4, 5]:
+            temp = _fasttext.similarity(query, "model.%dw%d.bin" % (dim, ws), "docset")
+            result.append([(retrieve(i[0])['preprocessed']['verbose']['casefolding'], i[1]) for i in temp[:10]])
+
+    d = pd.DataFrame(result)
+    print(d)
+    d.to_excel("compare.xlsx")
 
 
 def testing():
@@ -162,5 +155,5 @@ def testing():
 
 
 if __name__ == '__main__':
-    eprint_retrieve()
+    # eprint_retrieve()
     testing2()
