@@ -110,8 +110,8 @@ def eprint_retrieve():
         pickle.dump(x, f)
 
     print("training")
-    for dim in [100, 300, 500]:
-        for ws in [3, 4, 5]:
+    for dim in [100]:
+        for ws in [3]:
             _fasttext.training("model.%dw%d.bin" % (dim, ws), "dataset.txt", dim=dim, ws=ws)
 
 
@@ -155,5 +155,5 @@ def testing():
 
 
 if __name__ == '__main__':
-    # eprint_retrieve()
-    testing2()
+    eprint_retrieve()
+    # testing2()

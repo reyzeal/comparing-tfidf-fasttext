@@ -1,0 +1,35 @@
+import json
+import pprint
+
+import pymongo
+import requests
+
+
+def importEprint():
+    r = requests.get(
+        "http://eprints.upnyk.ac.id/cgi/search/archive/advanced/export_eprints_JSON.js?dataset=archive&screen=Search"
+        "&_action_export=1&output=JSON&exp=0%7C1%7C-date%2Fcreators_name%2Ftitle%7Carchive%7C-%7Cdepartment"
+        "%3Adepartment%3AALL%3AIN%3AINFORMATIKA%7Ctype%3Atype%3AANY%3AEQ%3Athesis%7C-%7Ceprint_status%3Aeprint_status"
+        "%3AANY%3AEQ%3Aarchive%7Cmetadata_visibility%3Ametadata_visibility%3AANY%3AEQ%3Ashow&n=&cache=152949")
+    data = r.json()
+    with open("raw.json", "w") as f:
+        json.dump(data, f)
+    print("WOKE")
+
+def jsonToDB():
+    with open("raw.json", "r") as r:
+        data = json.load(r)
+    result = []
+    for i in data:
+        result.append({
+            '_id': i['eprintid'],
+            'data': i,
+        })
+    client = pymongo.MongoClient("localhost", 27017)
+    db = client['skripsi']
+    collection = db["documents"]
+    collection.insert_many(result)
+    # pprint.pprint(data[0])
+
+if __name__ == "__main__":
+    jsonToDB()
