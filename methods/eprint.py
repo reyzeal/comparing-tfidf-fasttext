@@ -32,4 +32,5 @@ def jsonToDB():
     # pprint.pprint(data[0])
 
 if __name__ == "__main__":
+    importEprint()
     jsonToDB()

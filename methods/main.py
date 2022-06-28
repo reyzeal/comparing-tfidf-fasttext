@@ -57,11 +57,18 @@ def worker(f, doc, _id):
     if 'preprocessed' not in doc or doc['preprocessed'] is None:
         r = f(doc['data']['title'])
         result[_id] = [doc['_id'], r]
-        update(doc['_id'], {'preprocessed': {'result': r[0], 'verbose': r[1]}})
+        update(doc['_id'], {
+            'preprocessed':
+                {'result': r[0], 'verbose': r[1]},
+            'id': _id
+        })
     else:
         r = doc['preprocessed']
         result[_id] = [doc['_id'], [r['result'], r['verbose']]]
-
+        if 'id' not in doc:
+            update(doc['_id'], {
+                'id': _id
+            })
 
 def eprint_retrieve():
     global result

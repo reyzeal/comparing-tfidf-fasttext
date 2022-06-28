@@ -5,10 +5,8 @@
 
 """
 from Sastrawi.Stemmer.StemmerFactory import StemmerFactory
-
+factory = StemmerFactory()
+stemmer = factory.create_stemmer()
 
 def stemming(arr):
-    factory = StemmerFactory()
-    stemmer = factory.create_stemmer()
-
     return [stemmer.stem(text) for text in arr]
