@@ -3,6 +3,7 @@ import pickle
 
 import numpy as np
 import numpy.linalg as LA
+import pandas as pd
 from sklearn.feature_extraction.text import TfidfTransformer
 from sklearn.feature_extraction.text import TfidfVectorizer
 from sklearn.feature_extraction.text import CountVectorizer
@@ -10,18 +11,25 @@ from sklearn.metrics.pairwise import cosine_similarity
 
 import preprocessing
 from database import retrieve, retrieveByIndex
+from preprocessing.stopword import stopwords
 
 cosine_function = lambda a, b: round(np.inner(a, b) / (LA.norm(a) * LA.norm(b)), 3)
 
 
 def Generate(trainset):
-    # CV = CountVectorizer(stop_words=stopwords)
-    vectorizer = TfidfVectorizer(smooth_idf=True, use_idf=True)
+    CV = CountVectorizer(stop_words=stopwords)
+    vectorizer = TfidfVectorizer(smooth_idf=True, use_idf=True, stop_words=stopwords)
 
-    # word_count_vec = CV.fit_transform(trainset).toarray()
-    # tfidf = tfidf_transformer.fit_transform(word_count_vec)
-
+    word_count_vec = CV.fit_transform(trainset)
     tfidf = vectorizer.fit_transform(trainset)
+
+    dftf = pd.DataFrame(word_count_vec.toarray(), columns=CV.get_feature_names_out())
+    dfidf = pd.DataFrame(tfidf.toarray(), columns=vectorizer.get_feature_names_out())
+    writer = pd.ExcelWriter("tfidf.xlsx", engine='xlsxwriter')
+    dftf.to_excel(writer, sheet_name='TF')
+    dfidf.to_excel(writer, sheet_name='TFIDF')
+    writer.save()
+    writer.close()
 
     with open("tfidf_features.bin", "wb") as f:
         pickle.dump(vectorizer.get_feature_names_out(), f)

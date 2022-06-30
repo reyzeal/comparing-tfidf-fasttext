@@ -2,12 +2,10 @@ from flask import Flask, jsonify, request
 from flask_cors import CORS
 from flask_socketio import SocketIO
 
-
 import database
-import preprocessing
 from main import eprint_retrieve
 from method.fasttext.module import similarity
-from tfidf.module import Testing
+from tfidf.module import Testing, Generate
 
 app = Flask(__name__)
 app.config['SECRET_KEY'] = 'secret!'
@@ -21,6 +19,12 @@ def index():
         'message': "Success",
         'data': database.retrieve()[:10]
     })
+
+@app.route("/tfidf", methods=["POST"])
+def tfidf_generate():
+    titles = [" ".join(i['preprocessed']['result']) for i in database.retrieve()]
+    Generate(titles)
+    return "OK"
 
 @app.route("/tfidf")
 def tfidf():
