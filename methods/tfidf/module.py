@@ -10,11 +10,12 @@ from sklearn.feature_extraction.text import CountVectorizer
 from sklearn.metrics.pairwise import cosine_similarity
 
 import preprocessing
+from cachetools import cached, TTLCache
 from database import retrieve, retrieveByIndex
 from preprocessing.stopword import stopwords
 
 cosine_function = lambda a, b: round(np.inner(a, b) / (LA.norm(a) * LA.norm(b)), 3)
-
+cache = TTLCache(maxsize=100, ttl=86400)
 
 def Generate(trainset):
     CV = CountVectorizer(stop_words=stopwords)
@@ -24,10 +25,10 @@ def Generate(trainset):
     tfidf = vectorizer.fit_transform(trainset)
 
     dftf = pd.DataFrame(word_count_vec.toarray(), columns=CV.get_feature_names_out())
-    dfidf = pd.DataFrame(tfidf.toarray(), columns=vectorizer.get_feature_names_out())
+    dfidf = pd.DataFrame(vectorizer.idf_)
     writer = pd.ExcelWriter("tfidf.xlsx", engine='xlsxwriter')
     dftf.to_excel(writer, sheet_name='TF')
-    dfidf.to_excel(writer, sheet_name='TFIDF')
+    dfidf.to_excel(writer, sheet_name='IDF')
     writer.save()
     writer.close()
 
@@ -58,6 +59,10 @@ def Testing(testset, page = 1, limit = 10, socketio=None):
     query_vec = vectorizer.transform([" ".join(test)])
     print("q",query_vec)
     socketio.emit("pencarian", "Cosine similarity")
+    sheet1 = pd.DataFrame(tfidf)
+    sheet2 = pd.DataFrame(query_vec)
+    sheet1.to_excel("tfidf.xlsx")
+    sheet2.to_excel("query.xlsx")
     results = cosine_similarity(tfidf, query_vec).reshape((-1,))
     # for vector in trainArray:
     #     print(vector)
